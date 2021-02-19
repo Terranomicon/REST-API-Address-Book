@@ -16,12 +16,19 @@ class UserController extends Controller
         $this->response($result, 200);
     }
 
-    public function createUser($full_name, $birthdate, $address, $gender)
+    /**
+     * @param $params
+     */
+    public function createUser($params)
     {
-        $result = User::createUser($full_name, $birthdate, $address, $gender);
+        $result = User::createUser($params);
         $this->response($result, 200);
     }
 
+    /**
+     * @param $id
+     * @param $params
+     */
     public function updateUser($id, $params)
     {
         $userData = User::getUserById($id);
@@ -41,9 +48,17 @@ class UserController extends Controller
         if (isset($params['gender'])) {
             $newUserData['gender'] = $params['gender'];
         }
-        var_dump($userData);
-        var_dump($newUserData);
         $result = User::updateUser($newUserData, $userData[0]);
+        $this->response($result, 200);
+    }
+
+    /**
+     * @param $id
+     */
+    public function deleteUser($id)
+    {
+        $userData = User::getUserById($id);
+        $result = User::deleteUser($userData[0]);
         $this->response($result, 200);
     }
 }

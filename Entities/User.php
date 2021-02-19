@@ -18,17 +18,18 @@ class User
         return pg_fetch_all(pg_query(Database::getConnection(), $query));
     }
 
-    public static function createUser($full_name, $birthdate, $address, $gender)
+    public static function createUser($params)
     {
-        $user['full_name'] = $full_name;
-        $user['birthdate'] = $birthdate;
-        $user['address'] = $address;
-        $user['gender'] = $gender;
-        return pg_insert(Database::getConnection(), 'users', $user);
+        return pg_insert(Database::getConnection(), 'users', $params);
     }
 
     public static function updateUser($newUserData, $userData)
     {
         return pg_update(Database::getConnection(), 'users', $newUserData, $userData);
+    }
+
+    public static function deleteUser($userData)
+    {
+        return pg_delete(Database::getConnection(), 'users', $userData);
     }
 }
