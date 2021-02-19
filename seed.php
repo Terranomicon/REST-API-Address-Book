@@ -2,14 +2,9 @@
 
 require_once 'vendor/autoload.php';
 require_once 'Config.php';
+require_once 'Database.php';
 
-
-$host = Config::getParam('host');
-$dbname = Config::getParam('dbname');
-$user = Config::getParam('user');
-$password = Config::getParam('password');
-$dbconn = pg_connect("host=$host dbname=$dbname user=$user password=$password")
-or die('Не удалось соединиться: ' . pg_last_error());
+$dbconn = Database::getConnection();
 
 $faker = Faker\Factory::create('ru_RU');
 
@@ -20,6 +15,7 @@ $phoneTypes = [0 => 'Городской', 1 => 'Мобильный'];
 $user = [];
 $email = [];
 $phone = [];
+
 for ($i = 0; $i < 50; $i++) {
     $user['full_name'] = $faker->name;
     $user['birthdate'] = $faker->date($format = 'Y-m-d', $max = 'now');
