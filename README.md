@@ -4,6 +4,7 @@
 # Table of Contents
 
 - [Installation](#installation)
+- [Usage](#usage)
 
 
 ## Installation
@@ -31,4 +32,14 @@ configure config.ini
 Для заполнения бд скрипт
 ```
 php seed.php
+```
+
+## Usage
+
+```
+required param (entity = user/phone/email)
+GET (POST)
+CREATE (PUT)
+UPDATE (PATCH)
+DELETE (DELETE)
 ```
