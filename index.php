@@ -91,14 +91,20 @@ switch ($_REQUEST['entity']) {
                 $userController->updateUser($_REQUEST['id'], $params);
             } catch (InvalidArgumentException $exception) {
                 echo $exception->getMessage();
+            } catch (Exception $exception) {
+                echo $exception;
             }
         }
 
         if ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
-            if (!isset($_REQUEST['id'])) {
-                throw new InvalidArgumentException('Invalid parameters. Id required', 400);
+            try {
+                if (!isset($_REQUEST['id'])) {
+                    throw new InvalidArgumentException('Invalid parameters. Id required', 400);
+                }
+                $userController->deleteUser($_REQUEST['id']);
+            } catch (Exception $exception) {
+                echo $exception;
             }
-            $userController->deleteUser($_REQUEST['id']);
         }
         break;
     case 'phone':
@@ -133,6 +139,8 @@ switch ($_REQUEST['entity']) {
                 $phoneController->createPhoneByUserId($params);
             } catch (InvalidArgumentException $exception) {
                 echo $exception->getMessage();
+            } catch (Exception $exception) {
+                echo $exception;
             }
         }
 
@@ -171,18 +179,114 @@ switch ($_REQUEST['entity']) {
                 $phoneController->updatePhone($params);
             } catch (InvalidArgumentException $exception) {
                 echo $exception->getMessage();
+            } catch (Exception $exception) {
+                echo $exception;
             }
         }
 
         if ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
-            if (!isset($_REQUEST['user_id'])) {
-                throw new InvalidArgumentException('Invalid parameters. User Id required', 400);
+            try {
+                if (!isset($_REQUEST['user_id'])) {
+                    throw new InvalidArgumentException('Invalid parameters. User Id required', 400);
+                }
+                $phoneController->deletePhone($_REQUEST['user_id']);
+            } catch (Exception $exception) {
+                echo $exception;
             }
-            $phoneController->deletePhone($_REQUEST['user_id']);
         }
         break;
     case 'email':
-        break;
+        $emailController = new EmailController();
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if (isset($_POST['id'])) {
+                $emailController->getEmails($_POST['id']);
+            }
+            $emailController->getEmails();
 
+        }
+        if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
+            $params = [];
+            try {
+                if (!isset($_REQUEST['user_id']) || $_REQUEST['user_id'] === '') {
+                    throw new InvalidArgumentException('Invalid parameters. User Id required', 400);
+                }
+                $params['user_id'] = $_REQUEST['user_id'];
+
+                if (!isset($_REQUEST['type']) || $_REQUEST['type'] === '') {
+                    throw new InvalidArgumentException('Invalid parameters. Email type required', 400);
+                }
+                if ($_REQUEST['type'] !== 'Личный' && $_REQUEST['type'] !== 'Рабочий') {
+                    throw new InvalidArgumentException('Invalid parameters. Email type not valid', 400);
+                }
+                $params['type'] = $_REQUEST['type'];
+
+                if (!isset($_REQUEST['email']) || $_REQUEST['email'] === '') {
+                    throw new InvalidArgumentException('Invalid parameters. Email required', 400);
+                }
+                if (!filter_var($_REQUEST['email'], FILTER_VALIDATE_EMAIL)) {
+                    throw new InvalidArgumentException('Invalid parameters. Email specified incorrectly', 400);
+                }
+                $params['email'] = $_REQUEST['email'];
+                $emailController->createEmailByUserId($params);
+            } catch (InvalidArgumentException $exception) {
+                echo $exception->getMessage();
+            }
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] == 'PATCH') {
+            $params = [];
+            try {
+                if (!isset($_REQUEST['user_id'])) {
+                    throw new InvalidArgumentException('Invalid parameters. User Id required', 400);
+                }
+                if (isset($_REQUEST['user_id'])) {
+                    if ($_REQUEST['user_id'] === '') {
+                        throw new InvalidArgumentException('Invalid parameters. User Id required', 400);
+                    } else {
+                        $params['user_id'] = $_REQUEST['user_id'];
+                    }
+                }
+
+                if (isset($_REQUEST['type'])) {
+                    if ($_REQUEST['type'] !== 'Личный' && $_REQUEST['type'] !== 'Рабочий') {
+                        throw new InvalidArgumentException('Invalid parameters.  Email type not valid', 400);
+                    }
+                    if ($_REQUEST['type'] !== '') {
+                        $params['type'] = $_REQUEST['type'];
+                    } else {
+                        throw new InvalidArgumentException('Invalid parameters. Email type required', 400);
+                    }
+                }
+
+                if (isset($_REQUEST['email'])) {
+                    if (!filter_var($_REQUEST['email'], FILTER_VALIDATE_EMAIL)) {
+                        throw new InvalidArgumentException('Invalid parameters. Email specified incorrectly', 400);
+                    }
+                    if ($_REQUEST['email'] !== '') {
+                        $params['email'] = $_REQUEST['email'];
+                    } else {
+                        throw new InvalidArgumentException('Invalid parameters. Email required', 400);
+                    }
+                }
+
+                $emailController->updateEmail($params);
+            } catch (InvalidArgumentException $exception) {
+                echo $exception->getMessage();
+            } catch (Exception $exception) {
+                echo $exception;
+            }
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
+            try {
+                if (!isset($_REQUEST['user_id'])) {
+                    throw new InvalidArgumentException('Invalid parameters. User Id required', 400);
+                }
+                $emailController->deleteEmail($_REQUEST['user_id']);
+            } catch (Exception $exception) {
+                echo $exception;
+            }
+        }
+        break;
 }
 

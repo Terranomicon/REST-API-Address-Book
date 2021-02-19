@@ -18,13 +18,17 @@ class PhonesController extends Controller
 
     /**
      * @param $params
+     * @throws Exception
      */
     public function createPhoneByUserId($params)
     {
+        $userData = Phones::getPhoneByUserId($params['user_id']);
+        if ($userData) {
+            throw new Exception('User id already in use');
+        }
         $result = Phones::createPhone($params);
         $this->response($result, 200);
     }
-
 
     /**
      * @param $params

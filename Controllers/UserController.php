@@ -28,6 +28,7 @@ class UserController extends Controller
     /**
      * @param $id
      * @param $params
+     * @throws Exception
      */
     public function updateUser($id, $params)
     {
@@ -57,6 +58,7 @@ class UserController extends Controller
 
     /**
      * @param $id
+     * @throws Exception
      */
     public function deleteUser($id)
     {

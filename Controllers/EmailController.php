@@ -1,17 +1,17 @@
 <?php
 
 require_once 'Controller.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . "/Entities/User.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/Entities/Email.php";
 
 
 class EmailController extends Controller
 {
-    public function getUsers($id = null)
+    public function getEmails($id = null)
     {
         if (isset($id)) {
-            $result = User::getUserById($id);
+            $result = Email::getEmailByUserId($id);
         } else {
-            $result = User::getAll();
+            $result = Email::getAll();
         }
         $this->response($result, 200);
     }
@@ -19,46 +19,53 @@ class EmailController extends Controller
     /**
      * @param $params
      */
-    public function createUser($params)
+    public function createEmailByUserId($params)
     {
-        $result = User::createUser($params);
-        $this->response($result, 200);
+        try {
+            $userData = Email::getEmailByUserId($params['user_id']);
+            if ($userData) {
+                throw new Exception('User id already in use');
+            }
+            $result = Email::createEmail($params);
+            $this->response($result, 200);
+        } catch (Exception $exception) {
+            echo $exception;
+        }
     }
 
     /**
-     * @param $id
      * @param $params
+     * @throws Exception
      */
-    public function updateUser($id, $params)
+    public function updateEmail($params)
     {
-        $userData = User::getUserById($id);
         $newUserData = [];
-        if (isset($params['full_name'])) {
-            $newUserData['full_name'] = $params['full_name'];
+        $userData = Email::getEmailByUserId($params['user_id']);
+        if (!$userData) {
+            throw new Exception('User not found');
+        }
+        if (isset($params['type'])) {
+            $newUserData['type'] = $params['type'];
         }
 
-        if (isset($params['birthdate'])) {
-            $newUserData['birthdate'] = $params['birthdate'];
+        if (isset($params['email'])) {
+            $newUserData['email'] = $params['email'];
         }
-
-        if (isset($params['address'])) {
-            $newUserData['address'] = $params['address'];
-        }
-
-        if (isset($params['gender'])) {
-            $newUserData['gender'] = $params['gender'];
-        }
-        $result = User::updateUser($newUserData, $userData[0]);
+        $result = Email::updatePhone($newUserData, $userData[0]);
         $this->response($result, 200);
     }
 
     /**
      * @param $id
+     * @throws Exception
      */
-    public function deleteUser($id)
+    public function deleteEmail($id)
     {
-        $userData = User::getUserById($id);
-        $result = User::deleteUser($userData[0]);
+        $userData = Email::getEmailByUserId($id);
+        if (!$userData) {
+            throw new Exception('User not found');
+        }
+        $result = Email::deletePhone($userData[0]);
         $this->response($result, 200);
     }
 }
