@@ -2,6 +2,8 @@
 
 require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Controllers/UserController.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Controllers/PhonesController.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Controllers/EmailController.php';
 
 switch ($_REQUEST['entity']) {
     case 'user':
@@ -100,6 +102,84 @@ switch ($_REQUEST['entity']) {
         }
         break;
     case 'phone':
+        $phoneController = new PhonesController();
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if (isset($_POST['id'])) {
+                $phoneController->getPhones($_POST['id']);
+            }
+            $phoneController->getPhones();
+
+        }
+        if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
+            $params = [];
+            try {
+                if (!isset($_REQUEST['user_id']) || $_REQUEST['user_id'] === '') {
+                    throw new InvalidArgumentException('Invalid parameters. User Id required', 400);
+                }
+                $params['user_id'] = $_REQUEST['user_id'];
+
+                if (!isset($_REQUEST['number_type']) || $_REQUEST['number_type'] === '') {
+                    throw new InvalidArgumentException('Invalid parameters. NumberType required', 400);
+                }
+                if ($_REQUEST['number_type'] !== 'Городской' && $_REQUEST['number_type'] !== 'Мобильный') {
+                    throw new InvalidArgumentException('Invalid parameters. NumberType not valid', 400);
+                }
+                $params['number_type'] = $_REQUEST['number_type'];
+
+                if (!isset($_REQUEST['number']) || $_REQUEST['number'] === '') {
+                    throw new InvalidArgumentException('Invalid parameters. Number required', 400);
+                }
+                $params['number'] = $_REQUEST['number'];
+                $phoneController->createPhoneByUserId($params);
+            } catch (InvalidArgumentException $exception) {
+                echo $exception->getMessage();
+            }
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] == 'PATCH') {
+            $params = [];
+            try {
+                if (!isset($_REQUEST['user_id'])) {
+                    throw new InvalidArgumentException('Invalid parameters. User Id required', 400);
+                }
+                if (isset($_REQUEST['user_id'])) {
+                    if ($_REQUEST['user_id'] === '') {
+                        throw new InvalidArgumentException('Invalid parameters. User Id required', 400);
+                    } else {
+                        $params['user_id'] = $_REQUEST['user_id'];
+                    }
+                }
+
+                if (isset($_REQUEST['number_type'])) {
+                    if ($_REQUEST['number_type'] !== 'Городской' && $_REQUEST['number_type'] !== 'Мобильный') {
+                        throw new InvalidArgumentException('Invalid parameters. NumberType not valid', 400);
+                    }
+                    if ($_REQUEST['number_type'] !== '') {
+                        $params['number_type'] = $_REQUEST['number_type'];
+                    } else {
+                        throw new InvalidArgumentException('Invalid parameters. NumberType required', 400);
+                    }
+                }
+
+                if (isset($_REQUEST['number'])) {
+                    if ($_REQUEST['number'] !== '') {
+                        $params['number'] = $_REQUEST['number'];
+                    } else {
+                        throw new InvalidArgumentException('Invalid parameters. Number required', 400);
+                    }
+                }
+                $phoneController->updatePhone($params);
+            } catch (InvalidArgumentException $exception) {
+                echo $exception->getMessage();
+            }
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
+            if (!isset($_REQUEST['user_id'])) {
+                throw new InvalidArgumentException('Invalid parameters. User Id required', 400);
+            }
+            $phoneController->deletePhone($_REQUEST['user_id']);
+        }
         break;
     case 'email':
         break;

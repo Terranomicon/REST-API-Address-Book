@@ -4,7 +4,7 @@ require_once 'Controller.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . "/Entities/User.php";
 
 
-class UserController extends Controller
+class EmailController extends Controller
 {
     public function getUsers($id = null)
     {
@@ -31,11 +31,8 @@ class UserController extends Controller
      */
     public function updateUser($id, $params)
     {
-        $newUserData = [];
         $userData = User::getUserById($id);
-        if (!$userData) {
-            throw new Exception('User not found');
-        }
+        $newUserData = [];
         if (isset($params['full_name'])) {
             $newUserData['full_name'] = $params['full_name'];
         }
@@ -61,9 +58,6 @@ class UserController extends Controller
     public function deleteUser($id)
     {
         $userData = User::getUserById($id);
-        if (!$userData) {
-            throw new Exception('User not found');
-        }
         $result = User::deleteUser($userData[0]);
         $this->response($result, 200);
     }
