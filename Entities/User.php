@@ -18,14 +18,20 @@ class User
         return pg_fetch_all(pg_query(Database::getConnection(), $query));
     }
 
-    public static function createUser($params)
+    public static function createUser($params): string
     {
-        return pg_insert(Database::getConnection(), 'users', $params);
+        if (pg_insert(Database::getConnection(), 'users', $params) != false) {
+            Logger::write('user create => ' . implode(' | ', $params));
+            return '200';
+        } else return '501';
     }
 
-    public static function updateUser($newUserData, $userData)
+    public static function updateUser($id, $newUserData, $userData): string
     {
-        return pg_update(Database::getConnection(), 'users', $newUserData, $userData);
+        if (pg_update(Database::getConnection(), 'users', $newUserData, $userData) != false) {
+            Logger::write('user update => ' . (string)"$id " . implode(' | ', $newUserData));
+            return '200';
+        } else return '501';
     }
 
     public static function deleteUser($userData)

@@ -52,7 +52,7 @@ class UserController extends Controller
         if (isset($params['gender'])) {
             $newUserData['gender'] = $params['gender'];
         }
-        $result = User::updateUser($newUserData, $userData[0]);
+        $result = User::updateUser($id, $newUserData, $userData[0]);
         $this->response($result, 200);
     }
 

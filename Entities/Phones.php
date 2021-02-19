@@ -18,14 +18,20 @@ class Phones
         return pg_fetch_all(pg_query(Database::getConnection(), $query));
     }
 
-    public static function createPhone($params)
+    public static function createPhone($params): string
     {
-        return pg_insert(Database::getConnection(), 'phone_number', $params);
+        if (pg_insert(Database::getConnection(), 'phone_number', $params) != false) {
+            Logger::write('phone create => ' . implode(' | ', $params));
+            return '200';
+        } else return '501';
     }
 
-    public static function updatePhone($newUserData, $userData)
+    public static function updatePhone($newUserData, $userData): string
     {
-        return pg_update(Database::getConnection(), 'phone_number', $newUserData, $userData);
+        if (pg_update(Database::getConnection(), 'phone_number', $newUserData, $userData) != false) {
+            Logger::write('phone update => ' . implode(' | ', $newUserData));
+            return '200';
+        } else return '501';
     }
 
     public static function deletePhone($userData)
